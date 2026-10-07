@@ -6,6 +6,8 @@ _Log what goes into the fridge. Get nudged every morning before it goes bad. Was
 
 🔗 **Live demo:** [cook-me-maybe.vercel.app](https://cook-me-maybe.vercel.app/)
 
+📱 **New here?** Follow the illustrated [Add to Home Screen guide (PDF)](docs/Add-to-Home-Screen-Guide.pdf) to install the app and turn on reminders.
+
 ---
 
 ## 🧩 Overview
@@ -95,6 +97,17 @@ Both tables enforce **Row-Level Security**: `auth.uid() = user_id`, so each user
 - Expiry dates are entered by hand, and quick-pick shelf lives are typical estimates.
 - No editing of an item's date yet; remove and re-add instead.
 - **Next:** per-user reminder time, barcode or receipt scanning, recipe ideas from what's expiring, a shared household fridge, and a food-saved vs wasted stats view.
+
+---
+
+## 📱 Install on Your Phone
+
+1. Open [cook-me-maybe.vercel.app](https://cook-me-maybe.vercel.app/) in Safari (iPhone) or Chrome (Android)
+2. **iPhone:** menu button → **Share** → **Add to Home Screen** → **Add**
+   **Android:** three-dot menu → **Install app**
+3. Open the app from the home-screen icon, sign up, and turn on notifications from the menu
+
+Step-by-step screenshots: **[Add to Home Screen guide (PDF)](docs/Add-to-Home-Screen-Guide.pdf)**
 
 ---
 
