@@ -127,7 +127,7 @@ Full step-by-step deployment (Supabase, Edge Function, schedule, Vercel) is in *
 ## 👩‍💻 Author
 
 **Naga Hema Ramishetty**
-Data Analyst
+Software Developer
 **GitHub:** [github.com/nagahemaramishetty](https://github.com/nagahemaramishetty)
 
 ## 🧭 Keywords
