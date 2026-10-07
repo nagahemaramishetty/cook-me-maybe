@@ -217,3 +217,13 @@ button:disabled { opacity: 0.6; cursor: default; }
   background: var(--bg);
   border-top: 1px solid var(--line);
 }
+
+/* Show / hide password */
+.pw-wrap { position: relative; }
+.pw-wrap input { padding-right: 48px; }
+.pw-toggle {
+  position: absolute; top: 50%; right: 4px; transform: translateY(-50%);
+  width: 40px; height: 40px; display: grid; place-items: center;
+  background: none; color: var(--muted);
+}
+.pw-toggle:hover, .pw-toggle:focus-visible { color: var(--ink); }
