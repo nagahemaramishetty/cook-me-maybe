@@ -49,7 +49,10 @@ function prettyDate(s) {
   const [y, m, d] = s.split('-').map(Number)
   return new Date(y, m - 1, d).toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' })
 }
-const Credit = () => <p className="credit">designed and developed by ‘Naga Hema Ramishetty’</p>
+// Pinned to the bottom of the screen on every page; the menu shows its own inline copy.
+const Credit = ({ inline = false }) => (
+  <footer className={inline ? 'credit' : 'credit credit-fixed'}>designed and developed by ‘Naga Hema Ramishetty’</footer>
+)
 
 const nameOf = (user) => (user?.user_metadata?.full_name || '').trim()
 
@@ -507,7 +510,7 @@ function Menu({ user, name, wasted, reload, remindersOn, setRemindersOn, onUserU
 
         <button className="ghost wide" onClick={() => supabase.auth.signOut()}>Sign out</button>
 
-        <Credit />
+        <Credit inline />
       </aside>
     </div>
   )
