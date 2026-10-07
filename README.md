@@ -1,5 +1,3 @@
----
-
 # 🥬 Cook Me Maybe: A Zero-Cost PWA That Reminds You to Cook Vegetables Before They Spoil
 
 ![Cook Me Maybe Architecture](docs/architecture.png)
