@@ -105,10 +105,10 @@ Both tables enforce **Row-Level Security**: `auth.uid() = user_id`, so each user
 1. Open [cook-me-maybe.vercel.app](https://cook-me-maybe.vercel.app/) in Safari (iPhone) or Chrome (Android)
 2. Add it to your home screen:
    - **iPhone:** menu button → **Share** → **Add to Home Screen** → **Add**
-   - **Android:** three-dot menu → **Install app**
+   - **Android:** three-dot menu → **Install and create shortcut** → **Install**
 3. Open the app from the home-screen icon, sign up, and turn on notifications from the menu
 
-Step-by-step screenshots: **[Add to Home Screen guide (PDF)](docs/Add-to-Home-Screen-Guide.pdf)**
+Step-by-step screenshots for iPhone and Android: **[Add to Home Screen guide (PDF)](docs/Add-to-Home-Screen-Guide.pdf)**
 
 ---
 
