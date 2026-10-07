@@ -104,25 +104,37 @@ button:disabled { opacity: 0.6; cursor: default; }
 .section-head { display: flex; align-items: center; justify-content: space-between; margin: 8px 0 10px; }
 .section-head h2 { margin: 0; }
 .list { list-style: none; margin: 0 0 16px; padding: 0; display: flex; flex-direction: column; gap: 8px; }
-.row {
+/* Swipeable item cards */
+.hint { margin: -2px 0 10px; }
+.swipe { position: relative; border-radius: 12px; overflow: hidden; }
+.swipe-action {
+  position: absolute; top: 0; bottom: 0; width: 96px;
+  font-weight: 700; font-size: 0.88rem; border-radius: 0;
+}
+.swipe-action.left { left: 0; }
+.swipe-action.right { right: 0; }
+.act-cooked, .act-undo { background: var(--green); color: #fff; }
+.act-remove { background: var(--red); color: #fff; }
+@media (prefers-color-scheme: dark) { .act-cooked, .act-undo, .act-remove { color: #10180f; } }
+.swipe-card {
+  position: relative; z-index: 1;
   background: var(--card);
   border: 1px solid var(--line);
-  border-left: 5px solid var(--green);
+  border-left: 4px solid var(--green);
   border-radius: 12px;
-  padding: 12px;
-  display: grid;
-  grid-template-columns: 1fr auto;
-  gap: 8px 10px;
-  align-items: center;
+  padding: 10px 12px;
+  display: flex; align-items: center; justify-content: space-between; gap: 10px;
+  touch-action: pan-y;
+  user-select: none; -webkit-user-select: none;
+  cursor: grab;
+  transition: transform 0.2s ease;
 }
-.row.soon { border-left-color: var(--amber); }
-.row.urgent { border-left-color: var(--red); }
-.row.expired { border-left-color: var(--muted); opacity: 0.75; }
-.info { display: flex; flex-direction: column; }
-.name { font-weight: 700; font-size: 1.02rem; }
-.date { color: var(--muted); font-size: 0.82rem; }
-.actions { grid-column: 1 / -1; display: flex; gap: 8px; justify-content: flex-end; }
-.cooked { background: var(--green-soft); color: var(--green); padding: 7px 12px; font-weight: 700; font-size: 0.85rem; }
+.swipe-card.dragging { transition: none; cursor: grabbing; }
+.swipe.soon .swipe-card { border-left-color: var(--amber); }
+.swipe.urgent .swipe-card { border-left-color: var(--red); }
+.info { display: flex; flex-direction: column; min-width: 0; }
+.name { font-weight: 600; font-size: 1rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.date { color: var(--muted); font-size: 0.8rem; }
 .x { background: transparent; color: var(--muted); padding: 7px 10px; }
 .x:hover { color: var(--red); }
 
@@ -132,7 +144,7 @@ button:disabled { opacity: 0.6; cursor: default; }
 .pill.urgent { background: var(--red-soft); color: var(--red); }
 .pill.expired { background: var(--grey-soft); color: var(--muted); }
 
-.faded .row { border-left-color: var(--line); opacity: 0.7; }
+.faded .swipe-card { border-left-color: var(--line); opacity: 0.7; }
 .faded .name { text-decoration: line-through; }
 
 .muted { color: var(--muted); }

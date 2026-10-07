@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { supabase, configured } from './supabase'
 import { enableReminders, disableReminders, isSubscribed, pushSupported } from './push'
 
@@ -255,16 +255,93 @@ function AddPage({ onSaved, onError }) {
   )
 }
 
+// One item card. Drag right to reveal the left action, left to reveal the right action.
+const ACTION_W = 96
+function SwipeRow({ id, openId, setOpenId, className = '', left, right, children }) {
+  const [dx, setDx] = useState(0)
+  const [dragging, setDragging] = useState(false)
+  const start = useRef(null)
+
+  // Close this row when another one opens
+  useEffect(() => {
+    if (openId !== id && !dragging) setDx(0)
+  }, [openId, id, dragging])
+
+  function onPointerDown(e) {
+    start.current = { x: e.clientX, y: e.clientY, base: dx, locked: null }
+  }
+  function onPointerMove(e) {
+    const s = start.current
+    if (!s) return
+    const mx = e.clientX - s.x
+    const my = e.clientY - s.y
+    if (s.locked === null) {
+      if (Math.abs(mx) < 8 && Math.abs(my) < 8) return
+      s.locked = Math.abs(mx) > Math.abs(my) ? 'x' : 'y'
+      if (s.locked === 'x') {
+        setDragging(true)
+        e.currentTarget.setPointerCapture?.(e.pointerId)
+      }
+    }
+    if (s.locked !== 'x') return
+    let next = s.base + mx
+    if (!left) next = Math.min(next, 0)
+    if (!right) next = Math.max(next, 0)
+    setDx(Math.max(-ACTION_W * 1.4, Math.min(ACTION_W * 1.4, next)))
+  }
+  function onPointerUp() {
+    const s = start.current
+    start.current = null
+    if (!s || s.locked !== 'x') {
+      // A plain tap closes an open row
+      if (s && dx !== 0) { setDx(0); setOpenId(null) }
+      return
+    }
+    setDragging(false)
+    if (dx > ACTION_W / 2 && left) { setDx(ACTION_W); setOpenId(id) }
+    else if (dx < -ACTION_W / 2 && right) { setDx(-ACTION_W); setOpenId(id) }
+    else { setDx(0); if (openId === id) setOpenId(null) }
+  }
+
+  return (
+    <li className={`swipe ${className}`}>
+      {left && (
+        <button className={`swipe-action left ${left.cls}`} onClick={left.onClick} tabIndex={dx > 0 ? 0 : -1} aria-label={left.label}>
+          {left.label}
+        </button>
+      )}
+      {right && (
+        <button className={`swipe-action right ${right.cls}`} onClick={right.onClick} tabIndex={dx < 0 ? 0 : -1} aria-label={right.label}>
+          {right.label}
+        </button>
+      )}
+      <div
+        className={`swipe-card ${dragging ? 'dragging' : ''}`}
+        style={{ transform: `translateX(${dx}px)` }}
+        onPointerDown={onPointerDown}
+        onPointerMove={onPointerMove}
+        onPointerUp={onPointerUp}
+        onPointerCancel={onPointerUp}
+      >
+        {children}
+      </div>
+    </li>
+  )
+}
+
 function FridgePage({ fresh, cooked, reload }) {
   const [showCooked, setShowCooked] = useState(false)
+  const [openId, setOpenId] = useState(null)
   const dueSoon = fresh.filter((i) => daysLeft(i.expiry_date) <= REMIND_DAYS).length
 
   async function markCooked(item, value = true) {
+    setOpenId(null)
     await supabase.from('items').update({ cooked: value }).eq('id', item.id)
     reload()
   }
   async function remove(item) {
     if (!confirm(`Remove ${item.name}?`)) return
+    setOpenId(null)
     await supabase.from('items').delete().eq('id', item.id)
     reload()
   }
@@ -278,24 +355,31 @@ function FridgePage({ fresh, cooked, reload }) {
       {fresh.length === 0 ? (
         <p className="muted empty">Nothing yet. Add what you bought today 🛒</p>
       ) : (
-        <ul className="list">
-          {fresh.map((item) => {
-            const s = statusOf(daysLeft(item.expiry_date))
-            return (
-              <li key={item.id} className={`row ${s.cls}`}>
-                <div className="info">
-                  <span className="name">{item.name}</span>
-                  <span className="date">{prettyDate(item.expiry_date)}</span>
-                </div>
-                <span className={`pill ${s.cls}`}>{s.label}</span>
-                <div className="actions">
-                  <button className="cooked" onClick={() => markCooked(item)}>Cooked ✓</button>
-                  <button className="x" onClick={() => remove(item)} aria-label={`Remove ${item.name}`}>✕</button>
-                </div>
-              </li>
-            )
-          })}
-        </ul>
+        <>
+          <p className="muted small hint">Swipe right when cooked · swipe left to remove</p>
+          <ul className="list">
+            {fresh.map((item) => {
+              const s = statusOf(daysLeft(item.expiry_date))
+              return (
+                <SwipeRow
+                  key={item.id}
+                  id={item.id}
+                  openId={openId}
+                  setOpenId={setOpenId}
+                  className={s.cls}
+                  left={{ label: 'Cooked ✓', cls: 'act-cooked', onClick: () => markCooked(item) }}
+                  right={{ label: 'Remove', cls: 'act-remove', onClick: () => remove(item) }}
+                >
+                  <div className="info">
+                    <span className="name">{item.name}</span>
+                    <span className="date">{prettyDate(item.expiry_date)}</span>
+                  </div>
+                  <span className={`pill ${s.cls}`}>{s.label}</span>
+                </SwipeRow>
+              )
+            })}
+          </ul>
+        </>
       )}
 
       {cooked.length > 0 && (
@@ -306,16 +390,19 @@ function FridgePage({ fresh, cooked, reload }) {
           {showCooked && (
             <ul className="list faded">
               {cooked.map((item) => (
-                <li key={item.id} className="row">
+                <SwipeRow
+                  key={item.id}
+                  id={item.id}
+                  openId={openId}
+                  setOpenId={setOpenId}
+                  left={{ label: 'Undo', cls: 'act-undo', onClick: () => markCooked(item, false) }}
+                  right={{ label: 'Remove', cls: 'act-remove', onClick: () => remove(item) }}
+                >
                   <div className="info">
                     <span className="name">{item.name}</span>
                     <span className="date">{prettyDate(item.expiry_date)}</span>
                   </div>
-                  <div className="actions">
-                    <button className="ghost" onClick={() => markCooked(item, false)}>Undo</button>
-                    <button className="x" onClick={() => remove(item)} aria-label={`Remove ${item.name}`}>✕</button>
-                  </div>
-                </li>
+                </SwipeRow>
               ))}
             </ul>
           )}
