@@ -6,6 +6,8 @@
 
 _Log what goes into the fridge. Get nudged every morning before it goes bad. Waste nothing._
 
+🔗 **Live demo:** [cook-me-maybe.vercel.app](https://cook-me-maybe.vercel.app/)
+
 ---
 
 ## 🧩 Overview
