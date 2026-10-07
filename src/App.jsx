@@ -49,6 +49,8 @@ function prettyDate(s) {
   const [y, m, d] = s.split('-').map(Number)
   return new Date(y, m - 1, d).toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' })
 }
+const Credit = () => <p className="credit">designed and developed by ‘Naga Hema Ramishetty’</p>
+
 const nameOf = (user) => (user?.user_metadata?.full_name || '').trim()
 
 export default function App() {
@@ -78,6 +80,7 @@ function NotConfigured() {
         <h2>Almost there</h2>
         <p>Add your Supabase URL, key and VAPID public key as environment variables (see <b>SETUP.md</b>), then restart or redeploy.</p>
       </div>
+      <Credit />
     </div>
   )
 }
@@ -145,6 +148,7 @@ function Login() {
           {signup ? 'Already have an account? Sign in' : 'New here? Create an account'}
         </button>
       </form>
+      <Credit />
     </div>
   )
 }
@@ -195,6 +199,7 @@ function Home({ session }) {
         ? <AddPage onSaved={load} onError={setError} />
         : <FridgePage fresh={fresh} cooked={cooked} reload={load} />}
 
+      <Credit />
       {menuOpen && (
         <Menu
           user={user}
@@ -502,7 +507,7 @@ function Menu({ user, name, wasted, reload, remindersOn, setRemindersOn, onUserU
 
         <button className="ghost wide" onClick={() => supabase.auth.signOut()}>Sign out</button>
 
-        <p className="credit">designed and developed by ‘Naga Hema Ramishetty’</p>
+        <Credit />
       </aside>
     </div>
   )
